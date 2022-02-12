@@ -1,9 +1,12 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
+import java.util.Scanner;
+import java.util.Arrays;
 
 public class server {
     private static final int SERVER_PORT = 8765;
@@ -35,30 +38,41 @@ public class server {
             //server loop listening for the client
             //and responding
             while(true) {
-                String strReceived = inputFromClient.readUTF();
-
-                if(strReceived.equalsIgnoreCase("hello")) {
-                    System.out.println("Sending hello to client");
-                    outputToClient.writeUTF("hello client!");
-                }
-                else if(strReceived.equalsIgnoreCase("quit")) {
-                    System.out.println("Shutting down server...");
-                    outputToClient.writeUTF("Shutting down server...");
-                    serverSocket.close();
-                    socket.close();
-                    break;  //get out of loop
+                String[] strReceived = inputFromClient.readUTF().split(" ");
+                var strLength = strReceived.length;
+                outputToClient.writeUTF(Integer.toString(strLength));
+                if (attemptLogin(strReceived))
+                {
+                    outputToClient.writeUTF("Worked.");
                 }
                 else {
-                    System.out.println("Unknown command received: "
-                            + strReceived);
-                    outputToClient.writeUTF("Unknown command.  "
-                            + "Please try again.");
+                    outputToClient.writeUTF("Failed.");
+                };
 
-                }
+                /**if(strReceived.equalsIgnoreCase("hello")) {
+                    System.out.println("Sending hello to client");
+                    outputToClient.writeUTF("hello client!");
+                }**/
+
             }//end server loop
         }
         catch(IOException ex) {
             ex.printStackTrace();
         }//end try-catch
     }//end createCommunicationLoop
+
+    public static boolean attemptLogin(String[] input)
+    {
+        try {
+            File txtFile = new File("CIS427_P1/src/logins.txt");
+            Scanner scan = new Scanner(txtFile);
+            boolean isValidLogin = false;
+            return true;
+        }
+        catch(IOException ex) {
+            ex.printStackTrace();
+            return false;
+        }//end try-catch
+
+    }
 }
