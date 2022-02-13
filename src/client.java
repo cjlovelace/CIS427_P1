@@ -34,7 +34,7 @@ public class client {
                 System.out.print("Send command to server:\t");
                 message = input.nextLine();
                 toServer.writeUTF(message);
-                if(message.equalsIgnoreCase("quit")) {
+                if(message.equalsIgnoreCase("LOGOFF")) {
                     break;
                 }
 

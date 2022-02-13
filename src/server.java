@@ -45,7 +45,9 @@ public class server {
             //and responding
             while(true) {
                 String[] strReceived = inputFromClient.readUTF().split(" ");
+                outputToServer(strReceived);
                 var strLength = strReceived.length;
+
                 if (!loggedIn)
                 {
 
@@ -70,7 +72,7 @@ public class server {
 
                     if (strLength < 2 || strLength > 4 || (strReceived[1].equals("-c") && strLength == 4))
                     {
-                        outputToClient.writeUTF(("FAILURE: Please enter valid circle or rectangle flag with appropriate parameters."));
+                        outputToClient.writeUTF(("301 message format error"));
                     }
                     else if (strLength == 2)
                     {
@@ -79,7 +81,7 @@ public class server {
                             writeFile.append("Error: No radius found\n");
                             writeFile.flush();
                             writeFile.close();
-                            outputToClient.writeUTF("Error: No radius found");
+                            outputToClient.writeUTF("301 message format error");
                         }
                         else if (strReceived[1].equals("-r"))
                         {
@@ -210,8 +212,21 @@ public class server {
                     }
                     else
                     {
-                        outputToClient.writeUTF("Error: Enter valid LIST command.");
+                        outputToClient.writeUTF("300 invalid command");
                     }
+                }
+                else if (strReceived[0].equals("SHUTDOWN") && strLength == 1)
+                {
+                    outputToClient.writeUTF("200 OK");
+                    System.exit(1);
+                }
+                else if (strReceived[0].equals("LOGOUT") && strLength == 1)
+                {
+                    outputToClient.writeUTF(("200 OK"));
+                }
+                else
+                {
+                    outputToClient.writeUTF("300 invalid command");
                 }
 
             }//end server loop
@@ -245,5 +260,17 @@ public class server {
             return false;
         }//end try-catch
 
+    }
+
+    public static void outputToServer (String[] input)
+    {
+        String tempOutput = "";
+
+        for (int i = 0; i < input.length; i++)
+        {
+            tempOutput += input[i] + " ";
+        }
+
+        System.out.println("Received from client: " + tempOutput);
     }
 }
