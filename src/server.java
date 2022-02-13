@@ -245,6 +245,8 @@ public class server {
                 //Shuts down program client and returns appropriate output to client
                 else if (strReceived[0].equals("LOGOUT") && strLength == 1)
                 {
+                    userName = "";
+                    loggedIn = false;
                     outputToClient.writeUTF(("200 OK"));
                 }
                 //Catches any invalid commands and returns message to client for output
