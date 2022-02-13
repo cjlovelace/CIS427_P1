@@ -64,6 +64,10 @@ public class server {
                 }
                 else if (strReceived[0].equals("SOLVE"))
                 {
+                    String userFile = "CIS427_P1/src/" + userName + "_solutions.txt";
+                    File txtFile = new File(userFile);
+                    FileWriter writeFile = new FileWriter(txtFile, true);
+
                     if (strLength < 2 || strLength > 4 || (strReceived[1].equals("-c") && strLength == 4))
                     {
                         outputToClient.writeUTF(("FAILURE: Please enter valid circle or rectangle flag with appropriate parameters."));
@@ -72,11 +76,17 @@ public class server {
                     {
                         if (strReceived[1].equals("-c"))
                         {
-                            outputToClient.writeUTF("Error: No radius found.");
+                            writeFile.append("Error: No radius found\n");
+                            writeFile.flush();
+                            writeFile.close();
+                            outputToClient.writeUTF("Error: No radius found");
                         }
                         else if (strReceived[1].equals("-r"))
                         {
-                            outputToClient.writeUTF("Error: No sides found.");
+                           writeFile.append("Error: No sides found\n");
+                           writeFile.flush();
+                           writeFile.close();
+                            outputToClient.writeUTF("Error: No sides found");
                         }
                     }
                     else if (strReceived[1].equals("-c"))
@@ -86,6 +96,11 @@ public class server {
                         int radius = Integer.valueOf(strReceived[2]);
                         Double circ = Double.valueOf(df.format(Math.PI * (2 * radius)));
                         Double area = Double.valueOf(df.format(Math.PI * Math.pow(radius, 2)));
+
+                        writeFile.append("radius " + Integer.toString(radius) + ":     Circle's circumference is "
+                                    + Double.toString(circ) + " and area is " + Double.toString(area) + "\n");
+                        writeFile.flush();
+                        writeFile.close();
                         outputToClient.writeUTF("Circle's circumference is " + Double.toString(circ) +
                                                      " and area is " + Double.toString(area));
                     }
@@ -96,6 +111,11 @@ public class server {
                             int side = Integer.valueOf(strReceived[2]);
                             double peri = side * 4;
                             double area = side * side;
+                            writeFile.append("sides " + Integer.toString(side) + " " + Integer.toString(side) +
+                                        ":     Rectangle's perimeter is " + Double.toString(peri) +
+                                        " and area is " + Double.toString(area) + "\n");
+                            writeFile.flush();
+                            writeFile.close();
                             outputToClient.writeUTF("Rectangle's perimeter is " + Double.toString(peri) +
                                     " and area is " + Double.toString(area));
                         }
@@ -105,10 +125,30 @@ public class server {
                             int side2 = Integer.valueOf(strReceived[3]);
                             double peri = (side1 * 2) + (side2 * 2);
                             double area = side1 * side2;
+                            writeFile.append("sides " + Integer.toString(side1) + " " + Integer.toString(side2) +
+                                    ":     Rectangle's perimeter is " + Double.toString(peri) +
+                                    " and area is " + Double.toString(area) + "\n");
+                            writeFile.flush();
+                            writeFile.close();
                             outputToClient.writeUTF("Rectangle's perimeter is " + Double.toString(peri) +
                                     " and area is " + Double.toString(area));
                         }
 
+
+                    }
+                }
+                else if (strReceived[0].equals("LIST") && (strLength == 1 || strLength == 2))
+                {
+                    String userFile = String.format("CIS427_P1/src/", userName, "_solutions.txt");
+                    File txtFile = new File(userFile);
+                    FileWriter writeFile = new FileWriter(txtFile, true);
+
+                    if (strLength == 1 && userName != "root")
+                    {
+                        outputToClient.writeUTF("Error: you are not the root user");
+                    }
+                    else if (strLength == 1 && userName == "root")
+                    {
 
                     }
                 }
