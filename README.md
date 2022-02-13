@@ -1,5 +1,5 @@
 # CIS 427 Project 1 - MatheMagic Online Program
-# Cody Lovelace 02/13/2022
+## Cody Lovelace 02/13/2022
 #### https://github.com/cjlovelace/CIS427_P1
 
 ** Note - source code for client/server referenced from Dr. John P. Baugh's provided code samples on Canvas. Thanks!
