@@ -1,1 +1,6 @@
 sides 2 2:     Rectangle's perimeter is 8.0 and area is 4.0
+radius 2:     Circle's circumference is 12.56 and area is 12.56
+sides 10 10:     Rectangle's perimeter is 40.0 and area is 100.0
+sides 10 5:     Rectangle's perimeter is 30.0 and area is 50.0
+Error: No sides found
+Error: No radius found
