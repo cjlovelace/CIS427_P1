@@ -48,6 +48,8 @@ public class server {
                 outputToServer(strReceived);
                 var strLength = strReceived.length;
 
+                //Requires user to login with a valid username/password pair from logins.txt
+                //Loop continues until user has successfully logged in
                 if (!loggedIn)
                 {
 
@@ -64,6 +66,12 @@ public class server {
                         }
                     }
                 }
+                /**
+                 * Implements the SOLVE command for circles and rectangles, outputs to client, writes to file
+                 * Error handles for missing radius or sides and invalid input
+                 * Accepts -r with 1 or 2 user defined sides and -c with one radius only
+                 * Rounds circle calculations up and formats them to two decimal places
+                 */
                 else if (strReceived[0].equals("SOLVE"))
                 {
                     String userFile = "CIS427_P1/src/" + userName + "_solutions.txt";
@@ -139,13 +147,19 @@ public class server {
 
                     }
                 }
+
+                /**
+                 * Implements list command, displaying user logs of commands performed on server
+                 * Allows LIST -all command for root user, denies other logged-in users
+                 * Users with empty solution files are properly indicated as having no activity
+                 */
                 else if (strReceived[0].equals("LIST"))
                 {
                     if (strLength == 2 && !userName.equals("root"))
                     {
                         outputToClient.writeUTF("Error: you are not the root user");
                     }
-                    else if (strLength == 2 && userName.equals("root"))
+                    else if (strLength == 2 && userName.equals("root") && strReceived[1].equals("-all"))
                     {
                         for (int user = 0; user < 4; user++)
                         {
@@ -215,15 +229,18 @@ public class server {
                         outputToClient.writeUTF("300 invalid command");
                     }
                 }
+                //Shuts down program server and returns appropriate output to client
                 else if (strReceived[0].equals("SHUTDOWN") && strLength == 1)
                 {
                     outputToClient.writeUTF("200 OK");
                     System.exit(1);
                 }
+                //Shuts down program client and returns appropriate output to client
                 else if (strReceived[0].equals("LOGOUT") && strLength == 1)
                 {
                     outputToClient.writeUTF(("200 OK"));
                 }
+                //Catches any invalid commands and returns message to client for output
                 else
                 {
                     outputToClient.writeUTF("300 invalid command");
@@ -236,6 +253,11 @@ public class server {
         }//end try-catch
     }//end createCommunicationLoop
 
+    /**
+     * Opens logins.txt and verifies that login and password are valid
+     * If username and/or password are invalid, method returns false and main prompts user to try again
+     * Implements try/catch in the event that logins.txt is missing or corrupt
+     **/
     public static boolean attemptLogin(String[] input)
     {
         try {
@@ -262,6 +284,7 @@ public class server {
 
     }
 
+    //Receives input from client message array, echos as a string to the server
     public static void outputToServer (String[] input)
     {
         String tempOutput = "";
