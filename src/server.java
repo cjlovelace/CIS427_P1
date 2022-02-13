@@ -2,8 +2,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.*;
+import java.lang.Math;
+import java.math.RoundingMode;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.Arrays;
@@ -45,15 +48,12 @@ public class server {
                 var strLength = strReceived.length;
                 if (!loggedIn)
                 {
-                    if (attemptLogin(strReceived)) {
-                        outputToClient.writeUTF("Successfully logged in.");
-                    }
 
                     if (strLength != 3 || !strReceived[0].equals("LOGIN"))
                     {
-                        outputToClient.writeUTF("FAILURE: Please provide correct username and password. Try again.");
+                        outputToClient.writeUTF("FAILURE: Please LOGIN with correct username and password. Try again.");
                     }
-                    else if (strReceived[0] == "LOGIN")
+                    else if (strReceived[0].equals("LOGIN"))
                     {
                         if (attemptLogin(strReceived)) {
                             outputToClient.writeUTF("Successfully logged in.");
@@ -62,10 +62,56 @@ public class server {
                         }
                     }
                 }
-                /**if(strReceived.equalsIgnoreCase("hello")) {
-                    System.out.println("Sending hello to client");
-                    outputToClient.writeUTF("hello client!");
-                }**/
+                else if (strReceived[0].equals("SOLVE"))
+                {
+                    if (strLength < 2 || strLength > 4 || (strReceived[1].equals("-c") && strLength == 4))
+                    {
+                        outputToClient.writeUTF(("FAILURE: Please enter valid circle or rectangle flag with appropriate parameters."));
+                    }
+                    else if (strLength == 2)
+                    {
+                        if (strReceived[1].equals("-c"))
+                        {
+                            outputToClient.writeUTF("Error: No radius found.");
+                        }
+                        else if (strReceived[1].equals("-r"))
+                        {
+                            outputToClient.writeUTF("Error: No sides found.");
+                        }
+                    }
+                    else if (strReceived[1].equals("-c"))
+                    {
+                        DecimalFormat df = new DecimalFormat("0.00");
+                        df.setRoundingMode(RoundingMode.DOWN);
+                        int radius = Integer.valueOf(strReceived[2]);
+                        Double circ = Double.valueOf(df.format(Math.PI * (2 * radius)));
+                        Double area = Double.valueOf(df.format(Math.PI * Math.pow(radius, 2)));
+                        outputToClient.writeUTF("Circle's circumference is " + Double.toString(circ) +
+                                                     " and area is " + Double.toString(area));
+                    }
+                    else if (strReceived[1].equals("-r"))
+                    {
+                        if (strLength == 3)
+                        {
+                            int side = Integer.valueOf(strReceived[2]);
+                            double peri = side * 4;
+                            double area = side * side;
+                            outputToClient.writeUTF("Rectangle's perimeter is " + Double.toString(peri) +
+                                    " and area is " + Double.toString(area));
+                        }
+                        else
+                        {
+                            int side1 = Integer.valueOf(strReceived[2]);
+                            int side2 = Integer.valueOf(strReceived[3]);
+                            double peri = (side1 * 2) + (side2 * 2);
+                            double area = side1 * side2;
+                            outputToClient.writeUTF("Rectangle's perimeter is " + Double.toString(peri) +
+                                    " and area is " + Double.toString(area));
+                        }
+
+
+                    }
+                }
 
             }//end server loop
         }
