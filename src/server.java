@@ -137,19 +137,80 @@ public class server {
 
                     }
                 }
-                else if (strReceived[0].equals("LIST") && (strLength == 1 || strLength == 2))
+                else if (strReceived[0].equals("LIST"))
                 {
-                    String userFile = String.format("CIS427_P1/src/", userName, "_solutions.txt");
-                    File txtFile = new File(userFile);
-                    FileWriter writeFile = new FileWriter(txtFile, true);
-
-                    if (strLength == 1 && userName != "root")
+                    if (strLength == 2 && !userName.equals("root"))
                     {
                         outputToClient.writeUTF("Error: you are not the root user");
                     }
-                    else if (strLength == 1 && userName == "root")
+                    else if (strLength == 2 && userName.equals("root"))
                     {
+                        for (int user = 0; user < 4; user++)
+                        {
+                            String tempUser;
+                            String consoleOut = "";
 
+                            if (user == 0)
+                            {
+                                tempUser = "root";
+                            }
+                            else if (user == 1)
+                            {
+                                tempUser = "john";
+                            }
+                            else if (user == 2)
+                            {
+                                tempUser = "sally";
+                            }
+                            else
+                            {
+                                tempUser = "qiang";
+                            }
+
+                            String userSol = "CIS427_P1/src/" + tempUser + "_solutions.txt";
+                            File solFile = new File(userSol);
+                            Scanner scan = new Scanner(solFile);
+
+                            consoleOut += tempUser;
+                            if (userSol.length() == 0)
+                            {
+                                consoleOut += "\n\tNo interactions yet\n";
+                            }
+                            else
+                            {
+                                while (scan.hasNextLine())
+                                {
+                                    consoleOut += "\n\t" + scan.nextLine() + "\n";
+                                }
+                            }
+                            System.out.println(consoleOut);
+                            outputToClient.writeUTF("List displayed on server.");
+                        }
+                    }
+                    else if (strLength == 1)
+                    {
+                        String userSol = "CIS427_P1/src/" + userName + "_solutions.txt";
+                        File solFile = new File(userSol);
+                        Scanner scan = new Scanner(solFile);
+
+                        if (solFile.length() == 0)
+                        {
+                            System.out.println(userName + "\n\tno interactions yet");
+                        }
+                        else
+                        {
+                            System.out.println(userName);
+                            while (scan.hasNextLine())
+                            {
+                                System.out.println("\t" + scan.nextLine());
+                            }
+
+                        }
+                        outputToClient.writeUTF("List displayed on server.");
+                    }
+                    else
+                    {
+                        outputToClient.writeUTF("Error: Enter valid LIST command.");
                     }
                 }
 
