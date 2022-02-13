@@ -53,17 +53,24 @@ public class server {
                 if (!loggedIn)
                 {
 
-                    if (strLength != 3 || !strReceived[0].equals("LOGIN"))
+                    if (strLength != 3 && strReceived[0].equals("LOGIN"))
                     {
-                        outputToClient.writeUTF("FAILURE: Please LOGIN with correct username and password. Try again.");
+                        outputToClient.writeUTF("301 message format error.");
                     }
-                    else if (strReceived[0].equals("LOGIN"))
+                    else if (strReceived[0].equals("LOGIN") && strLength == 3)
                     {
                         if (attemptLogin(strReceived)) {
-                            outputToClient.writeUTF("Successfully logged in.");
+                            outputToClient.writeUTF("SUCCESS");
                             userName = strReceived[1];
                             loggedIn = true;
                         }
+                        else {
+                            outputToClient.writeUTF("FAILURE: Please provide correct username and password. Try again.");
+                        }
+                    }
+                    else
+                    {
+                        outputToClient.writeUTF("304 invalid command");
                     }
                 }
                 /**
