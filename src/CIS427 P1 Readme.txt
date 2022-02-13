@@ -4,6 +4,8 @@ Cody Lovelace 02/13/2022
 
 Note - source code for client/server referenced from Dr. Bough's provided code samples on Canvas. Thanks!
 
+P.S. README file is more visually appealing on the GitHub page linked above.
+
 Implemented Commands:
 
 1. LOGIN username password
