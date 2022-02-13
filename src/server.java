@@ -49,14 +49,16 @@ public class server {
                         outputToClient.writeUTF("Successfully logged in.");
                     }
 
-                    if (strLength != 3 || strReceived[0] != "LOGIN")
+                    if (strLength != 3 || !strReceived[0].equals("LOGIN"))
                     {
-                        //outputToClient.writeUTF("FAILURE: Please provide correct username and password. Try again.");
+                        outputToClient.writeUTF("FAILURE: Please provide correct username and password. Try again.");
                     }
                     else if (strReceived[0] == "LOGIN")
                     {
                         if (attemptLogin(strReceived)) {
                             outputToClient.writeUTF("Successfully logged in.");
+                            userName = strReceived[1];
+                            loggedIn = true;
                         }
                     }
                 }
