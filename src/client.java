@@ -8,6 +8,7 @@ public class client {
 
     private static final int SERVER_PORT = 8765;
 
+
     public static void main(String[] args) {
 
         DataOutputStream toServer;

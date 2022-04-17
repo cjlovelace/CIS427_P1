@@ -2,23 +2,25 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.*;
+import java.net.InetAddress;
 import java.lang.Math;
 import java.math.RoundingMode;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.Scanner;
-import java.util.Arrays;
+import java.util.*;
 
 public class server {
     private static final int SERVER_PORT = 8765;
+    private static List<ClientHandler> clientList = new ArrayList<ClientHandler>();
+    static int clientNumber = 0;
 
     public static void main(String[] args) {
         createCommunicationLoop();
     }//end main
 
     public static void createCommunicationLoop() {
+
         try {
             boolean loggedIn = false;
             String userName = "";
@@ -46,6 +48,16 @@ public class server {
             while(true) {
                 String[] strReceived = inputFromClient.readUTF().split(" ");
                 outputToServer(strReceived);
+
+
+                InetAddress inetAddress = socket.getInetAddress();
+                System.out.println("Connection from client " +
+                        clientNumber);
+                System.out.println("\tHost name: " +
+                        inetAddress.getHostName());
+                System.out.println("\tHost IP address: "+
+                        inetAddress.getHostAddress());
+
                 var strLength = strReceived.length;
 
                 //Requires user to login with a valid username/password pair from logins.txt
@@ -63,6 +75,11 @@ public class server {
                             outputToClient.writeUTF("SUCCESS");
                             userName = strReceived[1];
                             loggedIn = true;
+                            ClientHandler tempClient = new ClientHandler(clientNumber, socket, serverSocket, userName, loggedIn);
+                            clientList.add(tempClient);
+                            Thread clientThread = new Thread(tempClient);
+                            clientThread.start();
+                            clientNumber++;
                         }
                         else {
                             outputToClient.writeUTF("FAILURE: Please provide correct username and password. Try again.");
@@ -248,6 +265,52 @@ public class server {
                     userName = "";
                     loggedIn = false;
                     outputToClient.writeUTF(("200 OK"));
+                }
+                //Handles MESSAGE command
+                else if (strReceived[0].equals("MESSAGE") && strLength >= 3)
+                {
+                    String tempName = strReceived[1];
+
+                    for (int i = 0; i < clientList.size(); i++)
+                    {
+                        ClientHandler tempList = clientList.get(i);
+                        String tempUser = tempList.getName();
+
+                        if (userName == tempUser) {
+                            Boolean tempLoggedIn = tempList.getLoggedIn();
+                            ServerSocket tempServerSocket = tempList.getServerSocket();
+                            Socket tempSocket = tempList.getSocket();
+                            DataOutputStream tempOutToClient = new DataOutputStream(socket.getOutputStream());
+
+                            if (tempLoggedIn == true) {
+
+                                String msg = "";
+
+                                for (int j = 2; j < strLength; j++) {
+                                    msg += " " + strReceived[j];
+                                }
+
+                                tempOutToClient.writeUTF(msg);
+                            }
+                            else {
+                                tempOutToClient.writeUTF("User" + tempUser + " is not logged in");
+                            }
+                            break;
+                        }
+                        else if (tempName != tempUser && i == clientList.size() - 1) {
+                            ServerSocket tempServerSocket = tempList.getServerSocket();
+                            Socket tempSocket = tempList.getSocket();
+                            DataOutputStream tempOutToClient = new DataOutputStream(socket.getOutputStream());
+
+                            if (tempUser == "root" || tempUser == "john" || tempUser == "sally" || tempUser == "qiang")
+                            {
+                                tempOutToClient.writeUTF(tempUser + " is not logged in.");
+                            }
+                            else {
+                                tempOutToClient.writeUTF("User " + tempUser + " does not exist.");
+                            }
+                        }
+                    }
                 }
                 //Catches any invalid commands and returns message to client for output
                 else
