@@ -46,6 +46,8 @@ public class server {
             //server loop listening for the client
             //and responding
             while(true) {
+                ClientHandler tempClient = new ClientHandler(clientNumber, socket, serverSocket, userName, loggedIn);
+                clientList.add(tempClient);
                 String[] strReceived = inputFromClient.readUTF().split(" ");
                 outputToServer(strReceived);
 
@@ -75,8 +77,7 @@ public class server {
                             outputToClient.writeUTF("SUCCESS");
                             userName = strReceived[1];
                             loggedIn = true;
-                            ClientHandler tempClient = new ClientHandler(clientNumber, socket, serverSocket, userName, loggedIn);
-                            clientList.add(tempClient);
+                            tempClient = new ClientHandler(clientNumber, socket, serverSocket, userName, loggedIn);
                             Thread clientThread = new Thread(tempClient);
                             clientThread.start();
                             clientNumber++;
@@ -270,6 +271,7 @@ public class server {
                 else if (strReceived[0].equals("MESSAGE") && strLength >= 3)
                 {
                     String tempName = strReceived[1];
+                    String tempString = "Sending to " + strReceived[2];
 
                     for (int i = 0; i < clientList.size(); i++)
                     {
@@ -293,7 +295,7 @@ public class server {
                                 tempOutToClient.writeUTF(msg);
                             }
                             else {
-                                tempOutToClient.writeUTF("User" + tempUser + " is not logged in");
+                                tempOutToClient.writeUTF(tempString + "\n" + "User" + tempUser + " is not logged in");
                             }
                             break;
                         }
@@ -304,10 +306,10 @@ public class server {
 
                             if (tempUser == "root" || tempUser == "john" || tempUser == "sally" || tempUser == "qiang")
                             {
-                                tempOutToClient.writeUTF(tempUser + " is not logged in.");
+                                tempOutToClient.writeUTF(tempString + "\n" + tempUser + " is not logged in.");
                             }
                             else {
-                                tempOutToClient.writeUTF("User " + tempUser + " does not exist.");
+                                tempOutToClient.writeUTF(tempString + "\n" + "User " + tempUser + " does not exist.");
                             }
                         }
                     }

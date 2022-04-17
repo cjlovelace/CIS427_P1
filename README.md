@@ -1,5 +1,6 @@
-# CIS 427 Project 1 - MatheMagic Online Program
-## Cody Lovelace 02/13/2022
+# CIS 427 Project 3 - MatheMagic Online Program (The Sequel)
+## Cody Lovelace
+## Original Version - 02/13/2022 | Updated - 04/17/2022
 #### https://github.com/cjlovelace/CIS427_P1
 
 ** Note - source code for client/server referenced from Dr. John P. Baugh's provided code samples on Canvas. Thanks!
@@ -36,6 +37,10 @@
 
 ### 5. LOGOUT
 * Upon receiving the LOGOUT command, the client exits after receiving the confirmation string "200 OK". The server confirms that only SHUTDOWN is included with the command, properly handling incorrect numbers of command parameters and other general invalid input.
+
+### 6. MESSAGE
+* Upon receiving the MESSAGE command, the client sends a message through the server to the indicated user's client should they be logged in. If not logged in, the sender's client indicates this via message.
+* While the syntax seems correct given Dr. Baugh's example, this is not fully functional on my end.
 
 ## General error handling (invalid command, message format error)
    In the event that none of the valid commands are received from the client's input, the server returns the string "300 invalid command" to the client. If the client's input formats commands incorrectly - such as greater-than or fewer-than numbers of command parameters, improper flags, other unexpected input - the server returns the string "301 message format error" to the client.
@@ -206,3 +211,9 @@ Server says: 300 invalid command
 Send command to server:	LOGOUT
 
 Server says: 200 OK
+
+Send command to server:	LOGIN john john22
+Server says: SUCCESS
+Send command to server:	MESSAGE qiang Hello
+
+Server says:  Hello
